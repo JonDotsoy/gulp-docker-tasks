@@ -1,0 +1,29 @@
+{
+  "name": "gulp-docker-tasks",
+  "version": "0.1.0-dev",
+  "description": "Tasks to Gulp with Docker.",
+  "main": "lib/docker-tasks.js",
+  "scripts": {
+    "build": "babel src/ -d lib/"
+  },
+  "author": "Jon Dotsoy <hi@jon.soy>",
+  "license": "MIT",
+  "dependencies": {
+    "async": "^1.5.0",
+    "crypto": "0.0.3",
+    "docker-manager": "0.0.1-dev",
+    "gulp": "^3.9.0",
+    "gulp-sequence": "^0.4.1",
+    "gulp-util": "^3.0.7",
+    "lodash": "^3.10.1"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonDotsoy/gulp-docker-tasks.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jonDotsoy/gulp-docker-tasks/issues"
+  },
+  "homepage": "https://github.com/jonDotsoy/gulp-docker-tasks#readme"
+}
