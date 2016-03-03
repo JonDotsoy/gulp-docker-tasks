@@ -26,7 +26,7 @@ npm install --save gulp-docker-tasks
 Usage
 -----
 
-Inicializar todas las tareas usando el metodo `.attach()`.
+Initialize all tasks using the `.attach ()`.
 
 ```javascript
 var gulp = require("gulp");
