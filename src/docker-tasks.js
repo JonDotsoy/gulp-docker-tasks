@@ -1,7 +1,7 @@
 import Gulp from "gulp";
 import _ from "lodash";
 import gutil from "gulp-util";
-import {exec as Exec} from "child_process";
+import { exec as Exec } from "child_process";
 import gulpSequence from "gulp-sequence";
 import async from "async";
 import DockerManager from "docker-manager";
@@ -9,44 +9,44 @@ import crypto from "crypto";
 
 
 export default class dockerTasks {
-	constructor ({
-		gulp=Gulp,
-		cpexec=Exec,
-		config=null,
-		_package=null,
-		workDir=process.cwd(),
-		names={},
+	constructor({
+		gulp = Gulp,
+		cpexec = Exec,
+		config = null,
+		_package = null,
+		workDir = process.cwd(),
+		names = {},
 		dockerManager = (new DockerManager({
-					logger: gutil.log,
-				})),
+			logger: gutil.log,
+		})),
 	} = {}) {
-		this.cpexec=cpexec;
-		this.gulp=gulp;
-		this.config=config;
-		this.names=names;
-		this.docker=dockerManager;
-		this.workDir=workDir;
+		this.cpexec = cpexec;
+		this.gulp = gulp;
+		this.config = config;
+		this.names = names;
+		this.docker = dockerManager;
+		this.workDir = workDir;
 
 		if (_package == null) {
 			try {
-				_package=require(workDir+"/package.json");
+				_package = require(workDir + "/package.json");
 			} catch (ex) {
-				_package={};
+				_package = {};
 			}
 		}
 
-		this.package=_package;
+		this.package = _package;
 
 		if (config == null) {
-			this.config=_.get(this.package, "docker", {});
+			this.config = _.get(this.package, "docker", {});
 		}
 	}
 
-	_name (name) {
+	_name(name) {
 		return _.get(this.names, name, name);
 	}
 
-	_package(path, _default=null) {
+	_package(path, _default = null) {
 		return _.get(this.package, path, _default);
 	}
 
@@ -70,29 +70,29 @@ export default class dockerTasks {
 		return name;
 	}
 
-	_get_name_image () {
+	_get_name_image() {
 		let name = this._config("image", this._package("name", "project_docker_with_gulp_docker_tasks"));
 		let version = this._package("version", "0.0.0");
 
 		return `${name}:${version}`;
 	}
 
-	_config (path, _default=null) {
+	_config(path, _default = null) {
 		return _.get(this.config, path, _default);
 	}
 
-	attach (gulp=this.gulp) {
-		gulp.task(this._name("build"),     (done) => { this.build(done);     });
-		gulp.task(this._name("deploy"),    (done) => { this.deploy(done);    });
+	attach(gulp = this.gulp) {
+		gulp.task(this._name("build"), (done) => { this.build(done); });
+		gulp.task(this._name("deploy"), (done) => { this.deploy(done); });
 		gulp.task(this._name("terminate"), (done) => { this.terminate(done); });
-		gulp.task(this._name("start"),     (done) => { this.start(done);     });
-		gulp.task(this._name("stop"),      (done) => { this.stop(done);      });
-		gulp.task(this._name("redeploy"),  (done) => { this.redeploy(done);  });
-		gulp.task(this._name("rebuild"),   (done) => { this.rebuild(done);   });
-		gulp.task(this._name("logs"),      (done) => { this.logs(done);      });
+		gulp.task(this._name("start"), (done) => { this.start(done); });
+		gulp.task(this._name("stop"), (done) => { this.stop(done); });
+		gulp.task(this._name("redeploy"), (done) => { this.redeploy(done); });
+		gulp.task(this._name("rebuild"), (done) => { this.rebuild(done); });
+		gulp.task(this._name("logs"), (done) => { this.logs(done); });
 	}
 
-	build (done) {
+	build(done) {
 		let config = this._config("_.build", {});
 
 		// get image name of config.
@@ -103,13 +103,13 @@ export default class dockerTasks {
 			.then(function() {
 				// gutil.log(m);
 				done();
-			}, function (err) {
+			}, function(err) {
 				gutil.log(err.message);
 				done();
 			});
 	}
 
-	deploy (done) {
+	deploy(done) {
 		let config = this._config("_.deploy", {});
 
 		config = _.set(config, "name", this._config("name", this._get_name_container()));
@@ -119,76 +119,75 @@ export default class dockerTasks {
 
 		this.docker
 			.run(config, this._get_name_image())
-			.then(function (containerId) {
+			.then(function(containerId) {
 				gutil.log(containerId);
 				done();
-			}, function (err) {
+			}, function(err) {
 				gutil.log(err.message);
 			});
 	}
-	terminate (done) {
+	terminate(done) {
 		let config = this._config("_.terminate", {});
 
 		config = _.set(config, "force", true);
 
 		this.docker
 			.rm(config, this._get_name_container())
-			.then(function (est) {
+			.then(function(est) {
 				// gutil.log(est);
 				done();
-			}, function (err) {
+			}, function(err) {
 				// gutil.log(err);
 				done();
 			});
 
 	}
-	start (done) {
+	start(done) {
 		let config = this._config("_.start", {});
 
 		this.docker
 			.start(config, this._get_name_container())
-			.then(function (e) {
+			.then(function(e) {
 				gutil.log(e);
 				done();
-			}, function (err) {
+			}, function(err) {
 				gutil.log(err.message);
 			})
 	}
-	stop (done) {
+	stop(done) {
 		let config = this._config("_.stop", {});
 
 		this.docker
 			.stop(config, this._get_name_container())
-			.then(function (e) {
+			.then(function(e) {
 				gutil.log(e);
 				done();
-			}, function (err) {
+			}, function(err) {
 				gutil.log(err.message);
 			})
 	}
-	logs (done) {
+	logs(done) {
 		let config = this._config("_.logs", {});
 
 		this.docker
 			.logs(config, this._get_name_container())
-			.then(function (e) {
+			.then(function(e) {
 				gutil.log(e);
 				done();
-			}, function (err) {
+			}, function(err) {
 				gutil.log(err.message);
 			})
 	}
-	redeploy (done) {
+	redeploy(done) {
 		async.series([
-			(cb) => {this.terminate(cb)},
-			(cb) => {this.deploy(cb)},
+			(cb) => { this.terminate(cb) },
+			(cb) => { this.deploy(cb) },
 		], done);
 	}
-	rebuild (done) {
+	rebuild(done) {
 		async.series([
-			(cb) => {this.build(cb)},
+			(cb) => { this.build(cb) },
 		], done);
 	}
 
 }
-
